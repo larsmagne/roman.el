@@ -66,6 +66,7 @@ Roman numerals look like \"XCVII\"."
 				 roman-numeral-mapping))))
 	(if (and result
 		 (> number (car result)))
+	    ;; Subtractive numeral like "XC".
 	    (push (- number (pop result)) result)
 	  (push number result))))
     (reduce '+ result)))
