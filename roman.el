@@ -22,18 +22,23 @@
 
 ;;; Code:
 
+(defvar roman-numeral-mapping
+  '((1000 . "M")
+    (500 . "D")
+    (100 . "C")
+    (50 . "L")
+    (10 . "X")
+    (5 . "V")
+    (1 . "I")))
+
 (defun format-roman-numeral (number)
-  (let ((values '((1000 . "M")
-		  (500 . "D")
-		  (100 . "C")
-		  (50 . "L")
-		  (10 . "X")
-		  (5 . "V")
-		  (1 . "I")))
-	result)
+  "Format NUMBER into a Roman numeral.
+Roman numerals look like \"XCVII\"."
+  (let ((values roman-numeral-mapping)
+	roman)
     (while (> number 0)
       (while (>= number (caar values))
-	(push (cdar values) result)
+	(push (cdar values) roman)
 	(setq number (- number (caar values))))
       (when (and (> number 0)
 		 (> number (caadr values))
@@ -47,10 +52,23 @@
 			    (expt 10 (truncate (log (caar subs) 10))))
 			 1))
 	    (pop subs))
-	  (push (concat (cdar subs) (cdar values)) result)
+	  (push (concat (cdar subs) (cdar values)) roman)
 	  (setq number (- number (+ (* (caar subs) 4) (caadr values))))))
       (pop values))
-    (apply 'concat (nreverse result))))
+    (apply 'concat (nreverse roman))))
+
+(defun parse-roman-numeral (roman)
+  "Return the numerical value of a Roman numeral.
+Roman numerals look like \"XCVII\"."
+  (let (result)
+    (dotimes (i (length roman))
+      (let ((number (car (rassoc (string (aref roman i))
+				 roman-numeral-mapping))))
+	(if (and result
+		 (> number (car result)))
+	    (push (- number (pop result)) result)
+	  (push number result))))
+    (reduce '+ result)))
 
 (provide 'roman)
 
