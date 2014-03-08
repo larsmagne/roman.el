@@ -38,6 +38,10 @@
       (when (and (> number 0)
 		 (> number (caadr values))
 		 (memq (/ number (expt 10 (truncate (log number 10)))) '(9 4)))
+	;; If we have a number beginning with 9 or 4, we want to
+	;; generate a subtractive number, using the next smaller
+	;; number where the first digit is 1 -- XC, for instance, for
+	;; 90.
 	(let ((subs (cdr values)))
 	  (while (not (= (/ (caar subs)
 			    (expt 10 (truncate (log (caar subs) 10))))
