@@ -35,14 +35,16 @@
   "Format NUMBER into a Roman numeral.
 Roman numerals look like \"XCVII\"."
   (let ((values roman-numeral-mapping)
-	roman)
+	roman part)
     (while (> number 0)
       (while (>= number (caar values))
 	(push (cdar values) roman)
 	(setq number (- number (caar values))))
       (when (and (> number 0)
 		 (> number (caadr values))
-		 (memq (/ number (expt 10 (truncate (log number 10)))) '(9 4)))
+		 (memq (setq part (/ number (expt 10
+						  (truncate (log number 10)))))
+		       '(9 4)))
 	;; If we have a number beginning with 9 or 4, we want to
 	;; generate a subtractive number, using the next smaller
 	;; number where the first digit is 1 -- XC, for instance, for
@@ -53,7 +55,7 @@ Roman numerals look like \"XCVII\"."
 			 1))
 	    (pop subs))
 	  (push (concat (cdar subs) (cdar values)) roman)
-	  (setq number (- number (+ (* (caar subs) 4) (caadr values))))))
+	  (setq number (- number (* (caar subs) part)))))
       (pop values))
     (apply 'concat (nreverse roman))))
 
