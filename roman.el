@@ -39,6 +39,8 @@ Roman numerals look like \"XCVII\"."
     ;; Add the subtractive elements ("IV", etc) to the mapping.
     (while mapping
       (push (car mapping) values)
+      ;; We use the feature that the subtractive element is alternatively
+      ;; one or two elements further along in the list.
       (let ((subtract (elt mapping (1+ (mod (length mapping) 2)))))
 	(when subtract
 	  (push (cons (- (caar mapping) (car subtract))
