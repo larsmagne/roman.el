@@ -46,13 +46,11 @@ Roman numerals look like \"XCVII\"."
 	  (push (cons (- (caar mapping) (car subtract))
 		      (concat (cdr subtract) (cdar mapping))) values)))
       (pop mapping))
-    (setq values (nreverse values))
     ;; Compute the Roman numeral.
-    (while (> number 0)
-      (while (>= number (caar values))
-	(push (cdar values) roman)
-	(setq number (- number (caar values))))
-      (pop values))
+    (dolist (value (nreverse values))
+      (while (>= number (car value))
+	(push (cdr value) roman)
+	(setq number (- number (car value)))))
     (apply 'concat (nreverse roman))))
 
 (defun parse-roman-numeral (roman)
