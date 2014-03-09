@@ -35,17 +35,15 @@
   "Format NUMBER into a Roman numeral.
 Roman numerals look like \"XCVII\"."
   (let ((mapping roman-numeral-mapping)
-	values roman)
+	values roman elem subtract)
     ;; Add the subtractive elements ("IV", etc) to the mapping.
-    (while mapping
-      (push (car mapping) values)
+    (while (setq elem (pop mapping))
+      (push elem values)
       ;; We use the feature that the subtractive element is alternatively
       ;; one or two elements further along in the list.
-      (let ((subtract (elt mapping (1+ (mod (length mapping) 2)))))
-	(when subtract
-	  (push (cons (- (caar mapping) (car subtract))
-		      (concat (cdr subtract) (cdar mapping))) values)))
-      (pop mapping))
+      (when (setq subtract (elt mapping (mod (1+ (length mapping)) 2)))
+	(push (cons (- (car elem) (car subtract))
+		    (concat (cdr subtract) (cdr elem))) values)))
     ;; Compute the Roman numeral.
     (dolist (value (nreverse values))
       (while (>= number (car value))
