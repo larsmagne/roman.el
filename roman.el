@@ -43,7 +43,8 @@ Roman numerals look like \"XCVII\"."
       ;; one or two elements further along in the list.
       (when (setq subtract (elt mapping (mod (1+ (length mapping)) 2)))
 	(push (cons (- (car elem) (car subtract))
-		    (concat (cdr subtract) (cdr elem))) values)))
+		    (concat (cdr subtract) (cdr elem)))
+	      values)))
     ;; Compute the Roman numeral.
     (dolist (value (nreverse values))
       (while (>= number (car value))
