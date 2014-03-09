@@ -34,28 +34,22 @@
 (defun format-roman-numeral (number)
   "Format NUMBER into a Roman numeral.
 Roman numerals look like \"XCVII\"."
-  (let ((values roman-numeral-mapping)
-	roman part)
+  (let ((mapping roman-numeral-mapping)
+	values roman)
+    ;; Add the subtractive elements ("IV", etc) to the mapping.
+    (while mapping
+      (push (car mapping) values)
+      (let ((subtract (elt mapping (1+ (mod (length mapping) 2)))))
+	(when subtract
+	  (push (cons (- (caar mapping) (car subtract))
+		      (concat (cdr subtract) (cdar mapping))) values)))
+      (pop mapping))
+    (setq values (nreverse values))
+    ;; Compute the Roman numeral.
     (while (> number 0)
       (while (>= number (caar values))
 	(push (cdar values) roman)
 	(setq number (- number (caar values))))
-      (when (and (> number 0)
-		 (> number (caadr values))
-		 (memq (setq part (/ number (expt 10
-						  (truncate (log number 10)))))
-		       '(9 4)))
-	;; If we have a number beginning with 9 or 4, we want to
-	;; generate a subtractive number, using the next smaller
-	;; number where the first digit is 1 -- XC, for instance, for
-	;; 90.
-	(let ((subs (cdr values)))
-	  (while (not (= (/ (caar subs)
-			    (expt 10 (truncate (log (caar subs) 10))))
-			 1))
-	    (pop subs))
-	  (push (concat (cdar subs) (cdar values)) roman)
-	  (setq number (- number (* (caar subs) part)))))
       (pop values))
     (apply 'concat (nreverse roman))))
 
@@ -72,6 +66,9 @@ Roman numerals look like \"XCVII\"."
 	    (push (- number (pop result)) result)
 	  (push number result))))
     (reduce '+ result)))
+
+;; Test:
+;; (dotimes (i 2000) (unless (= (parse-roman-numeral (format-roman-numeral i)) i) (error "%s" i)))
 
 (provide 'roman)
 
