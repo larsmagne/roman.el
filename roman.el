@@ -22,6 +22,8 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 (defvar roman-numeral-mapping
   '((1000 . "M")
     (500 . "D")
@@ -64,7 +66,7 @@ Roman numerals look like \"XCVII\"."
 	    ;; Subtractive numeral like "XC".
 	    (push (- number (pop result)) result)
 	  (push number result))))
-    (reduce '+ result)))
+    (cl-reduce '+ result)))
 
 ;; Test:
 ;; (dotimes (i 2000) (unless (= (parse-roman-numeral (format-roman-numeral i)) i) (error "%s" i)))
